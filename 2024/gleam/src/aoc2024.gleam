@@ -5,6 +5,8 @@ import gleam/string
 import argv
 import simplifile
 
+import d06
+
 fn usage() {
   panic as "usage: ./aoc2024 day <number> [part <number>]"
 }
@@ -39,6 +41,7 @@ fn run(day: Int, part: Int) -> Nil {
   }
 
   case day {
+    6 -> solve(d06.part1, d06.part2, part, input)
     _ -> panic as "not implemented"
   }
 }
