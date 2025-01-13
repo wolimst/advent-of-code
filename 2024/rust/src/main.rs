@@ -28,6 +28,7 @@ fn solve(part: u32, part1_fn: fn(&str) -> i64, part2_fn: fn(&str) -> i64, input:
 
 fn run(day: u32, part: u32) {
     match day {
+        7 => solve(part, d07::part1, d07::part2, include_str!("../../data/d07.txt")),
         _ => unimplemented!(),
     }
 }
