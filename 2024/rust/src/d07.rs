@@ -1,66 +1,34 @@
-#[derive(Debug)]
-struct Equation {
-    result: i64,
-    numbers: Vec<i64>,
+pub fn part1(input: &str) -> i64 {
+    let equations = parse(input);
+    let ops = &[Operator::Add, Operator::Multiply];
+
+    equations
+        .iter()
+        .filter(|eq| eq.is_valid(ops))
+        .map(|eq| eq.result)
+        .sum()
 }
 
-struct Operator {
-    func: fn(&Equation) -> Equation,
-    cond: fn(&Equation) -> bool,
+pub fn part2(input: &str) -> i64 {
+    let equations = parse(input);
+    let ops = &[Operator::Add, Operator::Multiply, Operator::Concat];
+
+    equations
+        .iter()
+        .filter(|eq| eq.is_valid(ops))
+        .map(|eq| eq.result)
+        .sum()
 }
-
-impl Operator {
-    fn apply(&self, eq: &Equation) -> Result<Equation, &'static str> {
-        if (self.cond)(eq) {
-            Ok((self.func)(eq))
-        } else {
-            Err("cannot apply operator to the equation")
-        }
-    }
-}
-
-const ADD: Operator = Operator {
-    func: |eq| match eq.numbers.as_slice() {
-        [first, second, tail @ ..] => Equation {
-            result: eq.result,
-            numbers: vec![&[first + second], tail].concat(),
-        },
-        _ => panic!("invalid equation"),
-    },
-    cond: |eq| eq.numbers.len() > 1,
-};
-
-const MUL: Operator = Operator {
-    func: |eq| match eq.numbers.as_slice() {
-        [first, second, tail @ ..] => Equation {
-            result: eq.result,
-            numbers: [&[first * second], tail].concat(),
-        },
-        _ => panic!("invalid equation"),
-    },
-    cond: |eq| eq.numbers.len() > 1,
-};
-
-const CONCAT: Operator = Operator {
-    func: |eq| match eq.numbers.as_slice() {
-        [first, second, tail @ ..] => Equation {
-            result: eq.result,
-            numbers: vec![&[format!("{first}{second}").parse().unwrap()], tail].concat(),
-        },
-        _ => panic!("invalid equation"),
-    },
-    cond: |eq| eq.numbers.len() > 1,
-};
 
 fn parse(input: &str) -> Vec<Equation> {
     input
-        .trim()
         .lines()
+        .filter(|&line| !line.trim().is_empty())
         .map(|line| {
-            let (result_str, numbers_str) = line.split_once(':').unwrap();
+            let (result, numbers) = line.trim().split_once(':').unwrap();
             Equation {
-                result: result_str.trim().parse().unwrap(),
-                numbers: numbers_str
+                result: result.trim().parse().unwrap(),
+                numbers: numbers
                     .split_whitespace()
                     .map(|n| n.parse().unwrap())
                     .collect(),
@@ -69,40 +37,49 @@ fn parse(input: &str) -> Vec<Equation> {
         .collect()
 }
 
-fn is_valid_equation(eq: &Equation, operators: &[Operator]) -> bool {
-    match eq.numbers.as_slice() {
-        [a] => eq.result == *a,
-        _ => {
-            for op in operators {
-                if let Ok(next_eq) = op.apply(eq) {
-                    if is_valid_equation(&next_eq, operators) {
-                        return true;
-                    }
-                }
-            }
-            false
+#[derive(Debug, Clone)]
+struct Equation {
+    result: i64,
+    numbers: Vec<i64>,
+}
+
+#[derive(Debug, Clone, Copy)]
+enum Operator {
+    Add,
+    Multiply,
+    Concat,
+}
+
+impl Operator {
+    fn apply(&self, a: i64, b: i64) -> i64 {
+        match self {
+            Operator::Add => a + b,
+            Operator::Multiply => a * b,
+            Operator::Concat => format!("{a}{b}").parse().unwrap(),
         }
     }
 }
 
-pub fn part1(input: &str) -> i64 {
-    let equations = parse(input);
+impl Equation {
+    fn apply(&self, op: Operator) -> Option<Equation> {
+        match self.numbers.as_slice() {
+            [a, b, rest @ ..] => Some(Equation {
+                result: self.result,
+                numbers: vec![&[op.apply(*a, *b)], rest].concat(),
+            }),
+            _ => None,
+        }
+    }
 
-    equations
-        .iter()
-        .filter(|&eq| is_valid_equation(eq, &[ADD, MUL]))
-        .map(|eq| eq.result)
-        .sum()
-}
-
-pub fn part2(input: &str) -> i64 {
-    let equations = parse(input);
-
-    equations
-        .iter()
-        .filter(|&eq| is_valid_equation(eq, &[ADD, MUL, CONCAT]))
-        .map(|eq| eq.result)
-        .sum()
+    fn is_valid(&self, ops: &[Operator]) -> bool {
+        match self.numbers.as_slice() {
+            &[n] => self.result == n,
+            &[n, ..] if self.result < n => false,
+            _ => ops
+                .iter()
+                .any(|&op| self.apply(op).map_or(false, |eq| eq.is_valid(ops))),
+        }
+    }
 }
 
 #[cfg(test)]
