@@ -1,4 +1,5 @@
 mod d07;
+mod d08;
 
 use std::env;
 
@@ -29,6 +30,7 @@ fn solve(part: u32, part1_fn: fn(&str) -> i64, part2_fn: fn(&str) -> i64, input:
 fn run(day: u32, part: u32) {
     match day {
         7 => solve(part, d07::part1, d07::part2, include_str!("../../data/d07.txt")),
+        8 => solve(part, d08::part1, d08::part2, include_str!("../../data/d08.txt")),
         _ => unimplemented!(),
     }
 }
