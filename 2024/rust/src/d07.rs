@@ -1,4 +1,4 @@
-pub fn part1(input: &str) -> i64 {
+pub fn part1(input: &str) -> usize {
     let equations = parse(input);
     let ops = &[Operator::Add, Operator::Multiply];
 
@@ -9,7 +9,7 @@ pub fn part1(input: &str) -> i64 {
         .sum()
 }
 
-pub fn part2(input: &str) -> i64 {
+pub fn part2(input: &str) -> usize {
     let equations = parse(input);
     let ops = &[Operator::Add, Operator::Multiply, Operator::Concat];
 
@@ -39,8 +39,8 @@ fn parse(input: &str) -> Vec<Equation> {
 
 #[derive(Debug, Clone)]
 struct Equation {
-    result: i64,
-    numbers: Vec<i64>,
+    result: usize,
+    numbers: Vec<usize>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -51,7 +51,7 @@ enum Operator {
 }
 
 impl Operator {
-    fn apply(&self, a: i64, b: i64) -> i64 {
+    fn apply(&self, a: usize, b: usize) -> usize {
         match self {
             Operator::Add => a + b,
             Operator::Multiply => a * b,
@@ -87,7 +87,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_part1_example() {
+    fn test_part1() {
         let input = "
         190: 10 19
         3267: 81 40 27
@@ -104,7 +104,7 @@ mod tests {
     }
 
     #[test]
-    fn test_part2_example() {
+    fn test_part2() {
         let input = "
         190: 10 19
         3267: 81 40 27

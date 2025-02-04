@@ -26,7 +26,7 @@ fn parse(input: &str) -> Map {
     }
 }
 
-pub fn part1(input: &str) -> i64 {
+pub fn part1(input: &str) -> usize {
     let map = parse(input);
 
     map.antennas
@@ -40,10 +40,10 @@ pub fn part1(input: &str) -> i64 {
         })
         .filter(|(i, j)| (0..map.size.0 as i64).contains(i) && (0..map.size.1 as i64).contains(j))
         .unique()
-        .count() as i64
+        .count()
 }
 
-pub fn part2(input: &str) -> i64 {
+pub fn part2(input: &str) -> usize {
     let map = parse(input);
 
     map.antennas
@@ -60,7 +60,7 @@ pub fn part2(input: &str) -> i64 {
             })
         })
         .unique()
-        .count() as i64
+        .count()
 }
 
 #[cfg(test)]

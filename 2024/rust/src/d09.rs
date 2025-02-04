@@ -137,10 +137,9 @@ mod part1 {
     }
 }
 
-pub fn part1(input: &str) -> i64 {
+pub fn part1(input: &str) -> usize {
     let disk = part1::parse(input);
-    let checksum: usize = disk.iter().enumerate().map(|(i, id)| i * id).sum();
-    checksum as i64
+    disk.iter().enumerate().map(|(i, id)| i * id).sum()
 }
 
 mod part2 {
@@ -183,7 +182,7 @@ mod part2 {
         }
     }
 
-    pub fn fragment(mut disk: Disk) -> HashMap<Id, (Size, Pos)> {
+    pub fn defragment(mut disk: Disk) -> HashMap<Id, (Size, Pos)> {
         for id in (0..=*disk.files.keys().max().unwrap()).rev() {
             let &(size, pos) = disk.files.get(&id).unwrap();
             if let Some(positions) = disk.free_space_map.get_mut(&size) {
@@ -220,18 +219,16 @@ mod part2 {
     }
 }
 
-pub fn part2(_input: &str) -> i64 {
+pub fn part2(_input: &str) -> usize {
     let disk = part2::parse(_input);
 
-    let files = part2::fragment(disk);
+    let files = part2::defragment(disk);
 
-    let checksum: usize = files
+    files
         .iter()
         .flat_map(|(&id, &(size, pos))| iter::repeat(id).zip(pos..pos + size))
         .map(|(id, pos)| id * pos)
-        .sum();
-
-    checksum as i64
+        .sum()
 }
 
 #[cfg(test)]

@@ -52,23 +52,23 @@ fn hike(map: &Map, pos: (i64, i64)) -> Vec<(i64, i64)> {
     }
 }
 
-pub fn part1(input: &str) -> i64 {
+pub fn part1(input: &str) -> usize {
     let map = parse(input);
 
     map.trailheads
         .iter()
         .map(|trailhead| hike(&map, *trailhead))
-        .map(|summits| summits.iter().unique().count() as i64)
-        .sum::<i64>()
+        .map(|summits| summits.iter().unique().count())
+        .sum()
 }
 
-pub fn part2(input: &str) -> i64 {
+pub fn part2(input: &str) -> usize {
     let map = parse(input);
 
     map.trailheads
         .iter()
-        .map(|trailhead| hike(&map, *trailhead).len() as i64)
-        .sum::<i64>()
+        .map(|trailhead| hike(&map, *trailhead).len())
+        .sum()
 }
 
 #[cfg(test)]
