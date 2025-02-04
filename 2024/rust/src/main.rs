@@ -2,6 +2,7 @@ mod d07;
 mod d08;
 mod d09;
 mod d10;
+mod d11;
 use std::env;
 
 fn usage() -> ! {
@@ -53,6 +54,12 @@ fn run(day: u32, part: u32) {
             d10::part1,
             d10::part2,
             include_str!("../../data/d10.txt"),
+        ),
+        11 => solve(
+            part,
+            d11::part1,
+            d11::part2,
+            include_str!("../../data/d11.txt"),
         ),
         _ => unimplemented!(),
     }
