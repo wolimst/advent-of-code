@@ -1,181 +1,158 @@
-use std::collections::HashMap;
+use std::cmp::Reverse;
+use std::collections::{BinaryHeap, HashMap, HashSet};
 
 use itertools::Itertools;
 
 type Coord = (isize, isize);
 type Dir = Coord;
-type Reindeer = (Coord, Dir);
 type Map = HashMap<Coord, char>;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-enum Move {
-    Forward,
-    Clockwise,
-    CounterClockwise,
+const DIRS: [Dir; 4] = [(0, 1), (1, 0), (0, -1), (-1, 0)];
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+struct Reindeer {
+    pos: Coord,
+    dir: Dir,
+    can_turn: bool,
 }
 
-#[derive(Debug, Clone)]
-struct Path {
-    moves: Vec<Move>,
-    score: usize,
-}
-
-impl Path {
-    fn new(moves: Vec<Move>) -> Self {
-        let score = moves
-            .iter()
-            .map(|m| match m {
-                Move::Forward => 1,
-                Move::Clockwise => 1000,
-                Move::CounterClockwise => 1000,
-            })
-            .sum();
-        Self { moves, score }
-    }
-
-    fn last_move(&self) -> &Move {
-        self.moves.last().unwrap_or(&Move::Forward)
-    }
-
-    fn add(&self, m: Move) -> Self {
-        let mut moves = self.moves.clone();
-        moves.push(m);
-        Path::new(moves)
-    }
-
-    fn to_reindeers(&self, start: &Reindeer) -> Vec<Reindeer> {
-        let mut reindeer = start.clone();
-        let mut reindeers = vec![reindeer];
-        for m in self.moves.iter() {
-            reindeer = next_reindeer(&reindeer, m);
-            reindeers.push(reindeer);
+impl Reindeer {
+    fn forward(&self) -> Self {
+        Reindeer {
+            pos: (self.pos.0 + self.dir.0, self.pos.1 + self.dir.1),
+            dir: self.dir,
+            can_turn: true,
         }
-        reindeers
     }
-}
 
-const DIRS: [Coord; 4] = [(0, 1), (1, 0), (0, -1), (-1, 0)];
-
-fn parse(input: &str) -> (Map, Reindeer, Coord) {
-    let mut map = HashMap::new();
-    let mut reindeer = (Coord::default(), (0, 1));
-    let mut end = Coord::default();
-    input.trim().lines().enumerate().for_each(|(i, line)| {
-        line.trim().char_indices().for_each(|(j, c)| {
-            map.insert((i as isize, j as isize), c);
-            if c == 'S' {
-                reindeer.0 = (i as isize, j as isize);
-            } else if c == 'E' {
-                end = (i as isize, j as isize);
-            }
-        });
-    });
-    (map, reindeer, end)
-}
-
-fn next_moves(last_move: &Move) -> Vec<Move> {
-    match last_move {
-        Move::Forward => vec![Move::Forward, Move::Clockwise, Move::CounterClockwise],
-        Move::Clockwise => vec![Move::Forward],
-        Move::CounterClockwise => vec![Move::Forward],
-    }
-}
-
-fn next_reindeer(reindeer: &Reindeer, movement: &Move) -> Reindeer {
-    let (pos, dir) = reindeer;
-    match movement {
-        Move::Forward => ((pos.0 + dir.0, pos.1 + dir.1), *dir),
-        Move::Clockwise => (
-            *pos,
-            match dir {
+    fn cw(&self) -> Self {
+        Reindeer {
+            pos: self.pos,
+            dir: match self.dir {
                 (0, 1) => (1, 0),
                 (1, 0) => (0, -1),
                 (0, -1) => (-1, 0),
                 (-1, 0) => (0, 1),
                 _ => unreachable!(),
             },
-        ),
-        Move::CounterClockwise => (
-            *pos,
-            match dir {
+            can_turn: false,
+        }
+    }
+
+    fn ccw(&self) -> Self {
+        Reindeer {
+            pos: self.pos,
+            dir: match self.dir {
                 (0, 1) => (-1, 0),
                 (1, 0) => (0, 1),
                 (0, -1) => (1, 0),
                 (-1, 0) => (0, -1),
                 _ => unreachable!(),
             },
-        ),
+            can_turn: false,
+        }
     }
 }
 
-fn escape_maze(
-    map: &Map,
-    reindeer: &Reindeer,
-    path: Path,
-    visited: &mut HashMap<Reindeer, Vec<Path>>,
-) {
-    let (pos, _dir) = reindeer;
+fn parse(input: &str) -> (Map, Reindeer, Vec<Reindeer>) {
+    let mut map = HashMap::new();
+    let mut start = Coord::default();
+    let mut end = Coord::default();
+    input.trim().lines().enumerate().for_each(|(i, line)| {
+        line.trim().char_indices().for_each(|(j, c)| {
+            map.insert((i as isize, j as isize), c);
+            if c == 'S' {
+                start = (i as isize, j as isize);
+            } else if c == 'E' {
+                end = (i as isize, j as isize);
+            }
+        });
+    });
 
-    if map.get(pos).unwrap_or(&'#') == &'#' {
-        return;
-    }
-
-    let prev_score = visited
-        .get(reindeer)
-        .and_then(|paths| paths.iter().map(|p| p.score).min());
-    match prev_score {
-        Some(prev_score) if path.score > prev_score => return,
-        Some(prev_score) if path.score == prev_score => {
-            visited.get_mut(reindeer).unwrap().push(path.clone());
-        }
-        _ => {
-            visited.insert(*reindeer, vec![path.clone()]);
-        }
+    let start = Reindeer {
+        pos: start,
+        dir: (0, 1),
+        can_turn: true,
     };
+    let ends = DIRS
+        .into_iter()
+        .map(|dir| Reindeer {
+            pos: end,
+            dir,
+            can_turn: true,
+        })
+        .collect();
+    (map, start, ends)
+}
 
-    if map.get(pos).unwrap() == &'E' {
-        return;
+fn neighbors(reindeer: Reindeer, map: &Map) -> Vec<(Reindeer, usize)> {
+    let mut result = Vec::new();
+
+    let forward = reindeer.forward();
+    if *map.get(&forward.pos).unwrap_or(&'#') != '#' {
+        result.push((forward, 1));
     }
 
-    let next_moves = next_moves(&path.last_move());
-    for m in next_moves {
-        let next_reindeer = next_reindeer(reindeer, &m);
-        let next_path = path.add(m);
-        escape_maze(map, &next_reindeer, next_path, visited);
+    if reindeer.can_turn {
+        result.push((reindeer.cw(), 1000));
+        result.push((reindeer.ccw(), 1000));
     }
+    result
+}
+
+fn dijkstra(
+    map: &Map,
+    start: Reindeer,
+) -> (HashMap<Reindeer, usize>, HashMap<Reindeer, Vec<Reindeer>>) {
+    let mut costs = HashMap::new();
+    let mut trace = HashMap::new();
+    let mut min_heap = BinaryHeap::new();
+    costs.insert(start, 0);
+    min_heap.push(Reverse((0, start)));
+    while let Some(Reverse((cost, reindeer))) = min_heap.pop() {
+        if cost > costs[&reindeer] {
+            continue;
+        }
+        for (neighbor, step_cost) in neighbors(reindeer, map) {
+            let cost = cost + step_cost;
+            if cost < *costs.get(&neighbor).unwrap_or(&usize::MAX) {
+                costs.insert(neighbor, cost);
+                trace.insert(neighbor, vec![reindeer]);
+                min_heap.push(Reverse((cost, neighbor)));
+            } else if cost == *costs.get(&neighbor).unwrap() {
+                trace.entry(neighbor).or_default().push(reindeer);
+            }
+        }
+    }
+    (costs, trace)
 }
 
 pub fn part1(input: &str) -> usize {
-    let (map, reindeer, end) = parse(input);
-    let mut visited = HashMap::new();
-    escape_maze(&map, &reindeer, Path::new(vec![]), &mut visited);
-    DIRS.iter()
-        .map(|dir| (end, *dir))
-        .filter_map(|end| visited.get(&end))
-        .flat_map(|paths| paths.iter().map(|p| p.score))
-        .min()
-        .unwrap()
+    let (map, start, ends) = parse(input);
+    let (costs, _trace) = dijkstra(&map, start);
+    let min_cost = *ends.iter().filter_map(|end| costs.get(end)).min().unwrap();
+    min_cost
 }
 
 pub fn part2(input: &str) -> usize {
-    let (map, reindeer, end) = parse(input);
-    let mut visited = HashMap::new();
-    escape_maze(&map, &reindeer, Path::new(vec![]), &mut visited);
+    let (map, start, ends) = parse(input);
+    let (costs, trace) = dijkstra(&map, start);
 
-    let paths = DIRS
+    let min_cost = *ends.iter().filter_map(|end| costs.get(end)).min().unwrap();
+    let min_cost_ends = ends
         .iter()
-        .map(|dir| (end, *dir))
-        .filter_map(|end| visited.get(&end))
-        .flat_map(|paths| paths.iter())
-        .collect::<Vec<_>>();
-    let min_score = paths.iter().map(|p| p.score).min().unwrap();
-    paths
-        .iter()
-        .filter(|p| p.score == min_score)
-        .flat_map(|p| p.to_reindeers(&reindeer))
-        .map(|(coord, _dir)| coord)
-        .unique()
-        .count()
+        .filter(|end| costs.get(end).filter(|&c| *c == min_cost).is_some())
+        .collect_vec();
+
+    let mut coords = HashSet::new();
+    let mut pool = Vec::from(min_cost_ends);
+    while let Some(reindeer) = pool.pop() {
+        coords.insert(reindeer.pos);
+        if let Some(prev) = trace.get(&reindeer) {
+            prev.iter().for_each(|prev| pool.push(prev));
+        }
+    }
+    coords.len()
 }
 
 #[cfg(test)]
