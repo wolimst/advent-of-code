@@ -43,24 +43,26 @@ fn count_length(
     length
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> String {
     let numbers = parse(input);
 
     let mut memo = HashMap::new();
     numbers
         .iter()
         .map(|n| count_length(*n, 0, 25, &mut memo))
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> String {
     let numbers = parse(input);
 
     let mut memo = HashMap::new();
     numbers
         .iter()
         .map(|n| count_length(*n, 0, 75, &mut memo))
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
 #[cfg(test)]
@@ -70,12 +72,12 @@ mod tests {
     #[test]
     fn test_part1() {
         let input = "125 17";
-        assert_eq!(part1(input), 55312);
+        assert_eq!(part1(input), "55312");
     }
 
     #[test]
     fn test_part2() {
         let input = "125 17";
-        assert_eq!(part2(input), 65601038650482);
+        assert_eq!(part2(input), "65601038650482");
     }
 }

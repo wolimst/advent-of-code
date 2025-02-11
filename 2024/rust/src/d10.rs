@@ -52,23 +52,25 @@ fn hike(map: &Map, pos: (i64, i64)) -> Vec<(i64, i64)> {
     }
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> String {
     let map = parse(input);
 
     map.trailheads
         .iter()
         .map(|trailhead| hike(&map, *trailhead))
         .map(|summits| summits.iter().unique().count())
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> String {
     let map = parse(input);
 
     map.trailheads
         .iter()
         .map(|trailhead| hike(&map, *trailhead).len())
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
 #[cfg(test)]
@@ -87,7 +89,7 @@ mod tests {
         01329801
         10456732
         ";
-        assert_eq!(part1(input), 36);
+        assert_eq!(part1(input), "36");
     }
 
     #[test]
@@ -102,6 +104,6 @@ mod tests {
         01329801
         10456732
         ";
-        assert_eq!(part2(input), 81);
+        assert_eq!(part2(input), "81");
     }
 }

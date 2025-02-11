@@ -72,17 +72,18 @@ fn calc_button_clicks(game: &Game) -> Option<(usize, usize)> {
     None
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> String {
     let games = parse(input);
 
     games
         .iter()
         .filter_map(calc_button_clicks)
         .map(|(a, b)| a * 3 + b)
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> String {
     let games = parse(input);
 
     games
@@ -94,7 +95,8 @@ pub fn part2(input: &str) -> usize {
         })
         .filter_map(|game| calc_button_clicks(&game))
         .map(|(a, b)| a * 3 + b)
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
 #[cfg(test)]
@@ -120,7 +122,7 @@ mod tests {
         Button B: X+27, Y+71
         Prize: X=18641, Y=10279
         ";
-        assert_eq!(part1(input), 480);
+        assert_eq!(part1(input), "480");
     }
 
     #[test]
@@ -142,6 +144,6 @@ mod tests {
         Button B: X+27, Y+71
         Prize: X=18641, Y=10279
         ";
-        assert_eq!(part2(input), 875318608908);
+        assert_eq!(part2(input), "875318608908");
     }
 }

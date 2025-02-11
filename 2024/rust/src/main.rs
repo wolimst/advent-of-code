@@ -16,7 +16,7 @@ fn usage() -> ! {
     std::process::exit(1);
 }
 
-fn solve(part: u32, part1_fn: fn(&str) -> usize, part2_fn: fn(&str) -> usize, input: &str) {
+fn solve(part: u32, part1_fn: fn(&str) -> String, part2_fn: fn(&str) -> String, input: &str) {
     match part {
         1 => {
             let answer1 = part1_fn(input);

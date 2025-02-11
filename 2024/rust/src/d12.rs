@@ -87,20 +87,22 @@ fn get_sides(region: &Region) -> usize {
         .sum()
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> String {
     let regions = parse(input);
     regions
         .iter()
         .map(|region| get_area(region) * get_perimeter(region))
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> String {
     let regions = parse(input);
     regions
         .iter()
         .map(|region| get_area(region) * get_sides(region))
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
 #[cfg(test)]
@@ -115,7 +117,7 @@ mod tests {
         BBCC
         EEEC
         ";
-        assert_eq!(part1(input1), 140);
+        assert_eq!(part1(input1), "140");
 
         let input2 = "
         OOOOO
@@ -124,7 +126,7 @@ mod tests {
         OXOXO
         OOOOO
         ";
-        assert_eq!(part1(input2), 772);
+        assert_eq!(part1(input2), "772");
 
         let input3 = "
         RRRRIICCFF
@@ -138,7 +140,7 @@ mod tests {
         MIIISIJEEE
         MMMISSJEEE
         ";
-        assert_eq!(part1(input3), 1930);
+        assert_eq!(part1(input3), "1930");
     }
 
     #[test]
@@ -149,7 +151,7 @@ mod tests {
         BBCC
         EEEC
         ";
-        assert_eq!(part2(input1), 80);
+        assert_eq!(part2(input1), "80");
 
         let input2 = "
         OOOOO
@@ -158,7 +160,7 @@ mod tests {
         OXOXO
         OOOOO
         ";
-        assert_eq!(part2(input2), 436);
+        assert_eq!(part2(input2), "436");
 
         let input3 = "
         EEEEE
@@ -167,7 +169,7 @@ mod tests {
         EXXXX
         EEEEE
         ";
-        assert_eq!(part2(input3), 236);
+        assert_eq!(part2(input3), "236");
 
         let input4 = "
         AAAAAA
@@ -177,7 +179,7 @@ mod tests {
         ABBAAA
         AAAAAA
         ";
-        assert_eq!(part2(input4), 368);
+        assert_eq!(part2(input4), "368");
 
         let input5 = "
         RRRRIICCFF
@@ -191,6 +193,6 @@ mod tests {
         MIIISIJEEE
         MMMISSJEEE
         ";
-        assert_eq!(part2(input5), 1206);
+        assert_eq!(part2(input5), "1206");
     }
 }

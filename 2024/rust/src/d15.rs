@@ -97,14 +97,14 @@ mod part1 {
     }
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> String {
     let (mut map, dirs) = part1::parse(input);
 
     for dir in dirs {
         map.move_robot(dir);
     }
 
-    map.boxes_gps().iter().sum()
+    map.boxes_gps().iter().sum::<usize>().to_string()
 }
 
 mod part2 {
@@ -254,14 +254,14 @@ mod part2 {
     }
 }
 
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> String {
     let (mut map, dirs) = part2::parse(input);
 
     for dir in dirs {
         map.move_robot(&dir);
     }
 
-    map.boxes_gps().iter().sum()
+    map.boxes_gps().iter().sum::<usize>().to_string()
 }
 
 #[cfg(test)]
@@ -282,7 +282,7 @@ mod tests {
 
         <^^>>>vv<v>>v<<
         ";
-        assert_eq!(part1(input1), 2028);
+        assert_eq!(part1(input1), "2028");
 
         let input2 = "
         ##########
@@ -307,7 +307,7 @@ mod tests {
         ^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
         v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
         ";
-        assert_eq!(part1(input2), 10092);
+        assert_eq!(part1(input2), "10092");
     }
 
     #[test]
@@ -323,7 +323,7 @@ mod tests {
 
         <vv<<^^<<^^
         ";
-        assert_eq!(part2(input1), 618);
+        assert_eq!(part2(input1), "618");
 
         let input2 = "
         ##########
@@ -348,6 +348,6 @@ mod tests {
         ^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
         v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^
         ";
-        assert_eq!(part2(input2), 9021);
+        assert_eq!(part2(input2), "9021");
     }
 }

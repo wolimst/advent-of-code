@@ -137,9 +137,13 @@ mod part1 {
     }
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> String {
     let disk = part1::parse(input);
-    disk.iter().enumerate().map(|(i, id)| i * id).sum()
+    disk.iter()
+        .enumerate()
+        .map(|(i, id)| i * id)
+        .sum::<usize>()
+        .to_string()
 }
 
 mod part2 {
@@ -219,7 +223,7 @@ mod part2 {
     }
 }
 
-pub fn part2(_input: &str) -> usize {
+pub fn part2(_input: &str) -> String {
     let disk = part2::parse(_input);
 
     let files = part2::defragment(disk);
@@ -228,7 +232,8 @@ pub fn part2(_input: &str) -> usize {
         .iter()
         .flat_map(|(&id, &(size, pos))| iter::repeat(id).zip(pos..pos + size))
         .map(|(id, pos)| id * pos)
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
 #[cfg(test)]
@@ -238,12 +243,12 @@ mod tests {
     #[test]
     fn test_part1() {
         let input = "2333133121414131402";
-        assert_eq!(part1(input), 1928);
+        assert_eq!(part1(input), "1928");
     }
 
     #[test]
     fn test_part2() {
         let input = "2333133121414131402";
-        assert_eq!(part2(input), 2858);
+        assert_eq!(part2(input), "2858");
     }
 }

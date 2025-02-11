@@ -1,4 +1,4 @@
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> String {
     let equations = parse(input);
     let ops = &[Operator::Add, Operator::Multiply];
 
@@ -6,10 +6,11 @@ pub fn part1(input: &str) -> usize {
         .iter()
         .filter(|eq| eq.is_valid(ops))
         .map(|eq| eq.result)
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> String {
     let equations = parse(input);
     let ops = &[Operator::Add, Operator::Multiply, Operator::Concat];
 
@@ -17,7 +18,8 @@ pub fn part2(input: &str) -> usize {
         .iter()
         .filter(|eq| eq.is_valid(ops))
         .map(|eq| eq.result)
-        .sum()
+        .sum::<usize>()
+        .to_string()
 }
 
 fn parse(input: &str) -> Vec<Equation> {
@@ -100,7 +102,7 @@ mod tests {
         292: 11 6 16 20
         ";
 
-        assert_eq!(part1(input), 3749);
+        assert_eq!(part1(input), "3749");
     }
 
     #[test]
@@ -117,6 +119,6 @@ mod tests {
         292: 11 6 16 20
         ";
 
-        assert_eq!(part2(input), 11387);
+        assert_eq!(part2(input), "11387");
     }
 }

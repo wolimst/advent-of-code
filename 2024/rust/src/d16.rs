@@ -127,14 +127,14 @@ fn dijkstra(
     (costs, trace)
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> String {
     let (map, start, ends) = parse(input);
     let (costs, _trace) = dijkstra(&map, start);
     let min_cost = *ends.iter().filter_map(|end| costs.get(end)).min().unwrap();
-    min_cost
+    min_cost.to_string()
 }
 
-pub fn part2(input: &str) -> usize {
+pub fn part2(input: &str) -> String {
     let (map, start, ends) = parse(input);
     let (costs, trace) = dijkstra(&map, start);
 
@@ -152,7 +152,7 @@ pub fn part2(input: &str) -> usize {
             prev.iter().for_each(|prev| pool.push(prev));
         }
     }
-    coords.len()
+    coords.len().to_string()
 }
 
 #[cfg(test)]
@@ -178,7 +178,7 @@ mod tests {
         #S..#.....#...#
         ###############
         ";
-        assert_eq!(part1(input1), 7036);
+        assert_eq!(part1(input1), "7036");
 
         let input2 = "
         #################
@@ -199,7 +199,7 @@ mod tests {
         #S#.............#
         #################
         ";
-        assert_eq!(part1(input2), 11048);
+        assert_eq!(part1(input2), "11048");
     }
 
     #[test]
@@ -221,7 +221,7 @@ mod tests {
         #S..#.....#...#
         ###############
         ";
-        assert_eq!(part2(input1), 45);
+        assert_eq!(part2(input1), "45");
 
         let input2 = "
         #################
@@ -242,6 +242,6 @@ mod tests {
         #S#.............#
         #################
         ";
-        assert_eq!(part2(input2), 64);
+        assert_eq!(part2(input2), "64");
     }
 }

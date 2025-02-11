@@ -55,12 +55,12 @@ fn count(positions: &Vec<(isize, isize)>) -> [usize; 4] {
         .unwrap()
 }
 
-pub fn part1(input: &str) -> usize {
+pub fn part1(input: &str) -> String {
     let robots = parse(input);
     let time = 100;
 
     let positions = robots.iter().map(|robot| wait(robot, time)).collect();
-    count(&positions).iter().product()
+    count(&positions).iter().product::<usize>().to_string()
 }
 
 fn _print(positions: &HashSet<(isize, isize)>) {
@@ -77,7 +77,7 @@ fn _print(positions: &HashSet<(isize, isize)>) {
     std::thread::sleep(std::time::Duration::from_millis(750));
 }
 
-pub fn part2(_input: &str) -> usize {
+pub fn part2(_input: &str) -> String {
     // let robots = parse(_input);
 
     // let (x_max, y_max) = (X.load(Ordering::Relaxed), Y.load(Ordering::Relaxed));
@@ -96,7 +96,7 @@ pub fn part2(_input: &str) -> usize {
     //         });
     // }
 
-    6876
+    "6876".to_string()
 }
 
 #[cfg(test)]
@@ -121,6 +121,6 @@ mod tests {
         p=2,4 v=2,-3
         p=9,5 v=-3,-3
         ";
-        assert_eq!(part1(input), 12);
+        assert_eq!(part1(input), "12");
     }
 }
