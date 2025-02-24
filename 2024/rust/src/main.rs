@@ -13,6 +13,7 @@ mod d18;
 mod d19;
 mod d20;
 mod d21;
+mod d22;
 
 use std::env;
 
@@ -131,6 +132,12 @@ fn run(day: u32, part: u32) {
             d21::part1,
             d21::part2,
             include_str!("../../data/d21.txt"),
+        ),
+        22 => solve(
+            part,
+            d22::part1,
+            d22::part2,
+            include_str!("../../data/d22.txt"),
         ),
         _ => unimplemented!(),
     }
